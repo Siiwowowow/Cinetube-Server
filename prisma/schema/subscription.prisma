@@ -1,0 +1,46 @@
+// Subscription model for premium plans
+model Subscription {
+  id                    String             @id @default(uuid())
+  userId                String             @unique
+  planType              PlanType           @default(MONTHLY)
+  status               SubscriptionStatus @default(ACTIVE)
+  startDate            DateTime           @default(now())
+  endDate              DateTime
+  autoRenew            Boolean            @default(true)
+  stripeSubscriptionId String?            @unique
+  stripeCustomerId     String?
+  canceledAt           DateTime?
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+  
+  // Relations
+  user                  User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([status])
+  @@index([endDate])
+  @@index([stripeSubscriptionId])
+  @@map("subscriptions")
+  subscriptionHistories SubscriptionHistory[]
+}
+
+// Subscription history for tracking changes
+model SubscriptionHistory {
+  id             String   @id @default(uuid())
+  subscriptionId String
+  userId         String
+  planType       PlanType
+  status         SubscriptionStatus
+  startDate      DateTime
+  endDate        DateTime
+  amount         Float
+  changedAt      DateTime @default(now())
+  
+  // Relations
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([subscriptionId])
+  @@index([userId])
+  @@index([changedAt])
+  @@map("subscription_histories")
+}

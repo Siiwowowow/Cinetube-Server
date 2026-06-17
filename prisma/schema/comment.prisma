@@ -1,0 +1,23 @@
+// Comment model for review comments
+model Comment {
+  id          String        @id @default(uuid())
+  content     String        @db.Text
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  likesCount  Int           @default(0)
+  
+  // Relations
+  userId      String
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reviewId    String
+  review      Review        @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  parentId    String?       // For nested comments/replies
+  parent      Comment?      @relation("CommentReplies", fields: [parentId], references: [id])
+  replies     Comment[]     @relation("CommentReplies")
+  likes       CommentLike[]
+  
+  @@index([reviewId])
+  @@index([parentId])
+  @@index([createdAt])
+  @@map("comments")
+}

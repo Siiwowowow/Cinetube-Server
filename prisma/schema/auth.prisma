@@ -1,4 +1,4 @@
-//src/prisma/schema/auth.prisma
+// User model (extended)
 model User {
   id                 String   @id @default(uuid())
   email              String   @unique
@@ -13,19 +13,37 @@ model User {
   isDeleted          Boolean  @default(false)
   deletedAt          DateTime?
 
+  // Stripe customer ID for payments
+  stripeCustomerId   String?
+  
+  // Subscription related
+  subscription       Subscription?
+  
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
-  admin              Admin?   // 👈 relation (optional)
+  // Relations
+  admin              Admin?   
+  reviews            Review[]
+  comments           Comment[]
+  likes              Like[]
+  commentLikes       CommentLike[]
+  watchlist          Watchlist[]
+  purchases          Purchase[]
+  transactions       Transaction[]
+  subscriptionHistory SubscriptionHistory[]
 
   sessions           Session[]
   accounts           Account[]
 
+  @@index([email])
+  @@index([role])
+  @@index([status])
   @@map("user")
 }
 
 model Session {
-  id        String   @id
+  id        String   @id @default(uuid())
   expiresAt DateTime
   token     String   @unique
   createdAt DateTime @default(now())
@@ -36,18 +54,19 @@ model Session {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([token])
   @@map("session")
 }
 
 model Account {
-  id                    String    @id
+  id                    String    @id @default(uuid())
   accountId             String
   providerId            String
   userId                String
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?
-  refreshToken          String?
-  idToken               String?
+  accessToken           String?   @db.Text
+  refreshToken          String?   @db.Text
+  idToken               String?   @db.Text
   accessTokenExpiresAt  DateTime?
   refreshTokenExpiresAt DateTime?
   scope                 String?
@@ -55,17 +74,20 @@ model Account {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
+  @@unique([providerId, accountId])
   @@index([userId])
+  @@index([providerId])
   @@map("account")
 }
 
 model Verification {
-  id         String   @id
+  id         String   @id @default(uuid())
   identifier String
   value      String
   expiresAt  DateTime
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
+  @@index([identifier])
   @@map("verification")
 }

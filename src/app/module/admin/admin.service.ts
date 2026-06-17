@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 //src/app/module/admin/admin.service.ts
 //src/app/module/admin/admin.service.ts
 import status from "http-status";
@@ -5,7 +6,7 @@ import { IRequestUser } from "../../interfaces/requestUser.interface.js";
 import { prisma } from "../../lib/prisma.js";
 import { IUpdateAdminPayload, IChangeUserRolePayload, IChangeUserStatusPayload } from "./admin.interface.js";
 import AppError from "../../errorHelpers/AppError.js";
-import { userStatus } from "@prisma/client";
+import { UserStatus } from "@prisma/client";
 
 const getAllAdmins = async () => {
     const admins = await prisma.admin.findMany({
@@ -87,7 +88,7 @@ const deleteAdmin = async (id: string, user: IRequestUser) => {
             data: {
                 isDeleted: true,
                 deletedAt: new Date(),
-                status: userStatus.DELETED
+                status: UserStatus.DELETED
             },
         })
 

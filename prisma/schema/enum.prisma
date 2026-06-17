@@ -1,11 +1,51 @@
-enum Role{
-    SUPER_ADMIN
-    ADMIN
-    USER
+// User related enums
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  USER
 }
-enum userStatus{
-    PENDING_VERIFICATION
-    BLOCKED
-    DELETED
-    ACTIVE
+
+enum UserStatus {
+  PENDING_VERIFICATION
+  BLOCKED
+  DELETED
+  ACTIVE
+}
+
+// Media related enums
+enum MediaType {
+  MOVIE
+  SERIES
+}
+
+enum PriceType {
+  FREE
+  PREMIUM
+}
+
+// Review related enums
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// Payment related enums
+enum PurchaseStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+// Subscription related enums
+enum PlanType {
+  MONTHLY
+  YEARLY
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
 }

@@ -1,0 +1,27 @@
+// Genre model
+model Genre {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  slug        String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  media       MediaGenre[]
+  
+  @@index([name])
+  @@map("genres")
+}
+
+// Junction table for Media and Genre (many-to-many)
+model MediaGenre {
+  mediaId   String
+  genreId   String
+  media     Media  @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  genre     Genre  @relation(fields: [genreId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  
+  @@id([mediaId, genreId])
+  @@map("media_genres")
+}

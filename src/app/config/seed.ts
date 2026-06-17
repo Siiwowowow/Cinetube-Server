@@ -1,5 +1,4 @@
-//src/app/config/seed.ts
-//src/app/config/seed.ts
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Role } from "@prisma/client";
 import { envVars } from "../config/env.js";
 import { auth } from "../lib/auth.js";
@@ -39,11 +38,9 @@ export const seedSuperAdmin = async () => {
         email: envVars.SUPER_ADMIN_EMAIL,
         password: envVars.SUPER_ADMIN_PASSWORD,
         name: "Super Admin",
-        // @ts-ignore - custom fields type issue in seed
         role: Role.SUPER_ADMIN,
-        // @ts-ignore
         needPasswordChange: false,
-      },
+      } as any,
     });
 
     if (!superAdminUser?.user?.id) {
@@ -67,7 +64,6 @@ export const seedSuperAdmin = async () => {
           name: "Super Admin",
           email: envVars.SUPER_ADMIN_EMAIL,
           userId: superAdminUser.user.id,
-         
         },
       });
 

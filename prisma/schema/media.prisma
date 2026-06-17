@@ -1,0 +1,39 @@
+// Media model for movies and series
+model Media {
+  id              String    @id @default(uuid())
+  title           String
+  description     String    @db.Text
+  synopsis        String?   @db.Text
+  posterUrl       String?
+  backdropUrl     String?
+  trailerUrl      String?
+  releaseYear     Int
+  director        String?
+  cast            String[]  // Array of actor names
+  duration        Int?      // in minutes
+  language        String    @default("English")
+  country         String?
+  contentRating   String?   // PG, PG-13, R, etc.
+  mediaType       MediaType @default(MOVIE)
+  streamingLink   String?
+  streamingPlatform String?
+  price           Float     @default(0)
+  priceType       PriceType @default(FREE)
+  isPublished     Boolean   @default(false)
+  viewCount       Int       @default(0)
+  averageRating   Float     @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  
+  // Relations
+  genres          MediaGenre[]
+  reviews         Review[]
+  watchlist       Watchlist[]
+  purchases       Purchase[]
+  
+  @@index([title])
+  @@index([releaseYear])
+  @@index([mediaType])
+  @@index([isPublished])
+  @@map("media")
+}

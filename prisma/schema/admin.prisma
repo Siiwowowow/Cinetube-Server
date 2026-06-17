@@ -1,18 +1,44 @@
+// Admin model (extends user)
 model Admin {
-    id            String    @id @default(uuid(7))
-    name          String
-    email         String    @unique
-    profilePhoto  String?
-    contactNumber String?
-    isDeleted     Boolean   @default(false)
-    createdAt     DateTime  @default(now())
-    updatedAt     DateTime  @updatedAt
-    deletedAt     DateTime?
+  id            String    @id @default(uuid())
+  name          String
+  email         String    @unique
+  profilePhoto  String?
+  contactNumber String?
+  isDeleted     Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
 
-    userId String @unique
-    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@index([email])
-    @@index([isDeleted])
-    @@map("admins")
+  // Admin activity logs
+  logs          AdminLog[]
+  
+  @@index([email])
+  @@index([isDeleted])
+  @@map("admins")
+}
+
+// Admin activity log for tracking actions
+model AdminLog {
+  id          String   @id @default(uuid())
+  adminId     String
+  action      String   // CREATE_MEDIA, UPDATE_MEDIA, DELETE_MEDIA, APPROVE_REVIEW, REJECT_REVIEW, etc.
+  targetType  String   // "media", "review", "user", "comment"
+  targetId    String
+  details     Json?    // Additional details about the action
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+  
+  // Relations
+  admin       Admin    @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  
+  @@index([adminId])
+  @@index([action])
+  @@index([createdAt])
+  @@index([targetType, targetId])
+  @@map("admin_logs")
 }

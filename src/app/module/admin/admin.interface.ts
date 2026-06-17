@@ -1,5 +1,4 @@
-//src/app/module/admin/admin.interface.ts
-import { Role, userStatus } from "@prisma/client"; // Import from your generated Prisma enums
+import { Role, UserStatus } from "@prisma/client"; // Import from your generated Prisma enums
 
 export interface IUpdateAdminPayload {
     admin?: {
@@ -11,7 +10,7 @@ export interface IUpdateAdminPayload {
 
 export interface IChangeUserStatusPayload {
     userId: string;
-    status: userStatus; // Changed from userStatus to status to match service usage
+    status: UserStatus; // Changed from userStatus to status to match service usage
 }
 
 export interface IChangeUserRolePayload {

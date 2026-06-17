@@ -12,7 +12,7 @@ import { JwtPayload } from "jsonwebtoken";
 import { envVars } from "../../config/env.js";
 import { hashPassword, verifyPassword } from "better-auth/crypto";
 import { randomBytes } from "node:crypto";
-import { userStatus } from "@prisma/client";
+import { UserStatus } from "@prisma/client";
 
 /** Must match `session.expiresIn` in lib/auth.ts (seconds) → ms for Date */
 const SESSION_DURATION_MS = 60 * 60 * 24 * 1000;
@@ -155,7 +155,11 @@ const getMe = async (userId: string) => {
 
   return user;
 };
-const getNewToken = async (refreshToken : string, sessionToken : string) => {
+const getNewToken = async (refreshToken : string, sessionToken : string | undefined) => {
+
+    if (!sessionToken) {
+        throw new AppError(status.UNAUTHORIZED, "Session token is missing");
+    }
 
     const isSessionTokenExists = await prisma.session.findUnique({
         where : {
@@ -434,7 +438,7 @@ const verifyEmail = async (email: string, otp: string) => {
     where: { email },
     data: {
       emailVerified: true,
-      status: userStatus.ACTIVE,
+      status: UserStatus.ACTIVE,
     },
   });
 
@@ -458,7 +462,7 @@ const forgetPassword = async (email : string) => {
       throw new AppError(status.BAD_REQUEST, "Email not verified");
   }
 
-  if(isUserExist.isDeleted || isUserExist.status === userStatus.DELETED || isUserExist.status === userStatus.BLOCKED){
+  if(isUserExist.isDeleted || isUserExist.status === UserStatus.DELETED || isUserExist.status === UserStatus.BLOCKED){
       throw new AppError(status.NOT_FOUND, "User not found"); 
   }
 
@@ -483,7 +487,7 @@ const resetPassword = async (email : string, otp : string, newPassword : string)
       throw new AppError(status.BAD_REQUEST, "Email not verified");
   }
 
-  if (isUserExist.isDeleted || isUserExist.status === userStatus.DELETED) {
+  if (isUserExist.isDeleted || isUserExist.status === UserStatus.DELETED) {
       throw new AppError(status.NOT_FOUND, "User not found");
   }
 
