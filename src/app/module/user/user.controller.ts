@@ -139,13 +139,30 @@ const getMyStats = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getMyTransactions = catchAsync(async (req: Request, res: Response) => {
+  const user = req.user as IRequestUser;
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 10;
+
+  const result = await UserService.getUserTransactions(user.userId, page, limit);
+
+  sendResponse(res, {
+    success: true,
+    httpCode: status.OK,
+    message: "Billing transactions retrieved successfully",
+    data: result.data,
+    meta: result.meta,
+  });
+});
+
 export const UserController = {
   updateMyProfile,
   removeProfilePhoto,
-  getMyProfile,      // ✅ New
-  getMyWatchlist,    // ✅ New
-  getMyReviews,      // ✅ New
-  getMyPurchases,    // ✅ New
-  getMyActivity,     // ✅ New
-  getMyStats,        // ✅ New
-};
+  getMyProfile,
+  getMyWatchlist,
+  getMyReviews,
+  getMyPurchases,
+  getMyActivity,
+  getMyStats,
+  getMyTransactions,
+};

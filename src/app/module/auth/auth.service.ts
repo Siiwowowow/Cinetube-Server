@@ -143,9 +143,10 @@ const getMe = async (userId: string) => {
       image: true,
       role: true,
       status: true,
-      emailVerified: true, // ✅ ADDED
-      needPasswordChange: true, // ✅ ADDED
+      emailVerified: true,
+      needPasswordChange: true,
       isDeleted: true,
+      stripeCustomerId: true,
     },
   });
 
@@ -153,7 +154,18 @@ const getMe = async (userId: string) => {
     throw new AppError(status.NOT_FOUND, "User not found");
   }
 
-  return user;
+  const activeSubscription = await prisma.subscription.findFirst({
+    where: {
+      userId,
+      status: 'ACTIVE',
+      endDate: { gt: new Date() }
+    }
+  });
+
+  return {
+    ...user,
+    activeSubscription: activeSubscription || null,
+  };
 };
 const getNewToken = async (refreshToken : string, sessionToken : string | undefined) => {
 

@@ -62,4 +62,11 @@ router.get(
   UserController.getMyStats
 );
 
+router.get(
+  "/me/transactions",
+  checkAuth(Role.USER, Role.ADMIN, Role.SUPER_ADMIN),
+  UserController.getMyTransactions
+);
+
 export const UserRoutes = router;
+

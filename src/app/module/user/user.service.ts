@@ -268,12 +268,33 @@ const getUserActivity = async (userId: string, limit: number = 20) => {
   return activities.slice(0, limit);
 };
 
+const getUserTransactions = async (userId: string, page: number = 1, limit: number = 10) => {
+  const skip = (page - 1) * limit;
+
+  const [transactions, total] = await Promise.all([
+    prisma.transaction.findMany({
+      where: { userId },
+      skip,
+      take: limit,
+      orderBy: { createdAt: 'desc' }
+    }),
+    prisma.transaction.count({ where: { userId } })
+  ]);
+
+  return {
+    data: transactions,
+    meta: { page, limit, total, totalPages: Math.ceil(total / limit) }
+  };
+};
+
 export const UserService = {
   updateMyProfile,
-  getMyProfile,        // ✅ New
-  getUserStats,        // ✅ New
-  getUserWatchlist,    // ✅ New
-  getUserReviews,      // ✅ New
-  getUserPurchases,    // ✅ New
-  getUserActivity,     // ✅ New
+  getMyProfile,
+  getUserStats,
+  getUserWatchlist,
+  getUserReviews,
+  getUserPurchases,
+  getUserActivity,
+  getUserTransactions
 };
+
