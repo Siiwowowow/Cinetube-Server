@@ -14,7 +14,7 @@
     "push": "prisma db push",
     "pull": "prisma db pull",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "prisma generate",
+    "postinstall": "prisma generate && tsc",
     "stripe:weebhook": "stripe listen --forward-to localhost:5000/webhook"
   },
   "keywords": [],
