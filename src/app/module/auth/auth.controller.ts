@@ -174,6 +174,18 @@ const verifyEmail = catchAsync(
         });
     }
 )
+const resendVerificationOTP = catchAsync(
+    async (req: Request, res: Response) => {
+        const { email } = req.body;
+        await AuthService.resendVerificationOTP(email);
+
+        sendResponse(res, {
+            httpCode: status.OK,
+            success: true,
+            message: "Verification OTP resent successfully",
+        });
+    }
+)
 const forgetPassword = catchAsync(
   async (req: Request, res: Response) => {
       const { email } = req.body;
@@ -267,7 +279,7 @@ console.log("GOOGLE SESSION:", session?.user); // 🔥 DEBUG (temporary)
   tokenUtils.setAccessTokenCookie(res, accessToken);
   tokenUtils.setRefreshTokenCookie(res, refreshToken);
 
-  return res.redirect(`${envVars.FRONTEND_URL}/?login=success`);
+  return res.redirect(`${envVars.FRONTEND_URL}/?login=success&accessToken=${accessToken}&refreshToken=${refreshToken}&sessionToken=${sessionToken}`);
 });
 
 const handleOAuthError = catchAsync((req: Request, res: Response) => {
@@ -282,6 +294,7 @@ export const AuthController = {
   changePassword,
   logoutUser,
   verifyEmail,
+  resendVerificationOTP,
   forgetPassword,
   resetPassword,
   googleLogin,

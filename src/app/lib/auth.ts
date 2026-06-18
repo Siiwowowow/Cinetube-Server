@@ -98,13 +98,13 @@ export const auth = betterAuth({
             where: { email },
           });
           
-          if (user && !user.emailVerified) {
-            sendEmail({
+          if (!user || !user.emailVerified) {
+            await sendEmail({
               to: email,
               subject: "Verify your email - Movie Portal",
               templateName: "otp",
               templateData: {
-                name: user.name,
+                name: user?.name || "User",
                 otp,
               }
             });
@@ -115,7 +115,7 @@ export const auth = betterAuth({
           });
 
           if (user) {
-            sendEmail({
+            await sendEmail({
               to: email,
               subject: "Password Reset OTP - Movie Portal",
               templateName: "otp",

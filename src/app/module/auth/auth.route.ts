@@ -22,6 +22,7 @@ router.post(
   AuthController.changePassword
 );
 router.post("/verify-email", AuthController.verifyEmail);
+router.post("/resend-verification-otp", AuthController.resendVerificationOTP);
 router.post("/forget-password", AuthController.forgetPassword);
 router.post("/reset-password", AuthController.resetPassword);
 router.get("/login/google", AuthController.googleLogin);
