@@ -128,6 +128,7 @@ const deleteReview = async (id: string, userId: string, isAdmin: boolean = false
   
   if (!review) throw new AppError(404, 'Review not found');
   if (!isAdmin && review.userId !== userId) throw new AppError(403, 'Unauthorized');
+  if (!isAdmin && review.status === 'APPROVED') throw new AppError(400, 'Cannot delete approved reviews');
   
   await prisma.review.delete({ where: { id } });
   
