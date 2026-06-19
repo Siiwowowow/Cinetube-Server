@@ -10,7 +10,9 @@ const createReview = z.object({
   })
 });
 
-const updateReview = createReview.partial();
+const updateReview = z.object({
+  body: createReview.shape.body.partial()
+});
 
 const updateStatus = z.object({
   body: z.object({

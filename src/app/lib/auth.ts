@@ -24,6 +24,11 @@ function durationToMs(duration: string): number {
 export const auth = betterAuth({
   baseURL: envVars.BETTER_AUTH_URL,
   secret: envVars.BETTER_AUTH_SECRET,
+  trustHost: true,
+  trustedProxyHeaders: true,
+  logger: {
+    level: "debug",
+  },
   database: prismaAdapter(prisma, {
     provider: "postgresql",
   }),
@@ -37,7 +42,7 @@ export const auth = betterAuth({
     google: {
       clientId: envVars.GOOGLE_CLIENT_ID,
       clientSecret: envVars.GOOGLE_CLIENT_SECRET,
-      callbackURL: envVars.GOOGLE_CALLBACK_URL,
+      redirectURI: envVars.GOOGLE_CALLBACK_URL,
       mapProfileToUser: () => {
         return {
           role: Role.USER,
@@ -173,21 +178,15 @@ export const auth = betterAuth({
 
   advanced: {
     useSecureCookies: envVars.NODE_ENV === "production",
+    defaultCookieAttributes: {
+      sameSite: envVars.NODE_ENV === "production" ? "none" : "lax",
+      secure: envVars.NODE_ENV === "production",
+      httpOnly: true,
+      path: "/",
+    },
     cookies: {
-      state: {
-        attributes: {
-          sameSite: envVars.NODE_ENV === "production" ? "none" : "lax",
-          secure: envVars.NODE_ENV === "production",
-          httpOnly: true,
-          path: "/",
-        }
-      },
       sessionToken: {
         attributes: {
-          sameSite: envVars.NODE_ENV === "production" ? "none" : "lax",
-          secure: envVars.NODE_ENV === "production",
-          httpOnly: true,
-          path: "/",
           maxAge: durationToMs(envVars.BETTER_AUTH_SESSION_TOKEN_EXPIRES_IN),
         }
       }

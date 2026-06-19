@@ -16,7 +16,11 @@ export const checkAuth =
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const sessionToken = CookieUtils.getCookie(req, "better-auth.session_token");
-      const accessToken = CookieUtils.getCookie(req, "accessToken");
+      let accessToken = CookieUtils.getCookie(req, "accessToken");
+
+      if (!accessToken && req.headers.authorization?.startsWith("Bearer ")) {
+        accessToken = req.headers.authorization.split(" ")[1];
+      }
 
       let user: any = null;
 

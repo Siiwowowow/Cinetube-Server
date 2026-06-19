@@ -15,6 +15,7 @@ import { PaymentController } from "./app/module/payment/payment.controller.js";
 
 
 const app: Application = express();
+app.set("trust proxy", true);
 app.set("query parser", (str : string) => qs.parse(str));
 
 app.set("view engine", "ejs");
