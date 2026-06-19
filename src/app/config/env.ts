@@ -39,6 +39,10 @@ interface EnvConfig {
     }
     SUPER_ADMIN_EMAIL: string;
     SUPER_ADMIN_PASSWORD: string;
+    ADMIN_EMAIL: string;
+    ADMIN_PASSWORD: string;
+    USER_EMAIL: string;
+    USER_PASSWORD: string;
 }
 
 
@@ -70,6 +74,10 @@ const loadEnvVariables = (): EnvConfig => {
         'CLOUDINARY_API_SECRET',
         'SUPER_ADMIN_EMAIL',
         'SUPER_ADMIN_PASSWORD',
+        'ADMIN_EMAIL',
+        'ADMIN_PASSWORD',
+        'USER_EMAIL',
+        'USER_PASSWORD',
         'STRIPE_SECRET_KEY',
         'STRIPE_PUBLISHABLE_KEY',
         'STRIPE_WEBHOOK_SECRET',
@@ -117,6 +125,10 @@ const loadEnvVariables = (): EnvConfig => {
         }, 
         SUPER_ADMIN_EMAIL: process.env.SUPER_ADMIN_EMAIL as string,
         SUPER_ADMIN_PASSWORD: process.env.SUPER_ADMIN_PASSWORD as string,
+        ADMIN_EMAIL: process.env.ADMIN_EMAIL as string,
+        ADMIN_PASSWORD: process.env.ADMIN_PASSWORD as string,
+        USER_EMAIL: process.env.USER_EMAIL as string,
+        USER_PASSWORD: process.env.USER_PASSWORD as string,
     }
 
 }
