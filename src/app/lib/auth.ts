@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma.js";
@@ -90,45 +91,64 @@ export const auth = betterAuth({
     bearer(),
     emailOTP({
       overrideDefaultEmailVerification: true,
+      sendVerificationOnSignUp: true,
       async sendVerificationOTP({ email, otp, type }) {
-        if (
-          email === envVars.SUPER_ADMIN_EMAIL ||
-          email === envVars.ADMIN_EMAIL ||
-          email === envVars.USER_EMAIL
-        ) return;
-
-        if (type === "email-verification") {
-          const user = await prisma.user.findUnique({
-            where: { email },
-          });
-          
-          if (!user || !user.emailVerified) {
-            await sendEmail({
-              to: email,
-              subject: "Verify your email - Movie Portal",
-              templateName: "otp",
-              templateData: {
-                name: user?.name || "User",
-                otp,
-              }
-            });
+        console.log("📩 sendVerificationOTP hook triggered:", { email, otp, type });
+        try {
+          if (
+            email === envVars.SUPER_ADMIN_EMAIL ||
+            email === envVars.ADMIN_EMAIL ||
+            email === envVars.USER_EMAIL
+          ) {
+            console.log(`Skipping OTP email for seed account: ${email}`);
+            return;
           }
-        } else if (type === "forget-password") {
-          const user = await prisma.user.findUnique({
-            where: { email },
-          });
 
-          if (user) {
-            await sendEmail({
-              to: email,
-              subject: "Password Reset OTP - Movie Portal",
-              templateName: "otp",
-              templateData: {
-                name: user.name,
-                otp,
-              }
+          if (type === "email-verification") {
+            const user = await prisma.user.findUnique({
+              where: { email },
             });
+            console.log(`Verification user lookup in DB for ${email}:`, user ? "Found" : "Not Found");
+            
+            if (!user || !user.emailVerified) {
+              await sendEmail({
+                to: email,
+                subject: "Verify your email - Movie Portal",
+                templateName: "otp",
+                templateData: {
+                  name: user?.name || "User",
+                  otp,
+                }
+              });
+              console.log(`✅ Verification email sent successfully to ${email}`);
+            } else {
+              console.log(`Verification skipped: User ${email} is already verified.`);
+            }
+          } else if (type === "forget-password") {
+            const user = await prisma.user.findUnique({
+              where: { email },
+            });
+            console.log(`Forget password user lookup in DB for ${email}:`, user ? "Found" : "Not Found");
+
+            if (user) {
+              await sendEmail({
+                to: email,
+                subject: "Password Reset OTP - Movie Portal",
+                templateName: "otp",
+                templateData: {
+                  name: user.name || "User",
+                  otp,
+                }
+              });
+              console.log(`✅ Password reset email sent successfully to ${email}`);
+            } else {
+              console.log(`Password reset skipped: User ${email} not found in DB.`);
+            }
+          } else {
+            console.log(`Warning: Unknown OTP type "${type}" for ${email}`);
           }
+        } catch (err: any) {
+          console.error(`❌ Error in sendVerificationOTP hook:`, err);
         }
       },
       expiresIn: 2 * 60,
